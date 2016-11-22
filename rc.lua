@@ -10,6 +10,9 @@ require("naughty")
 -- Load Debian menu entries
 require("debian.menu")
 
+-- Load vicious
+vicious = require("vicious")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -40,9 +43,13 @@ end
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "x-terminal-emulator"
-editor = os.getenv("EDITOR") or "editor"
-editor_cmd = terminal .. " -e " .. editor
+browser = "flock -n ~/.locks/qutebrowser qutebrowser"
+terminal = "flock -n ~/.locks/xfce4-terminal xfce4-terminal"
+emacs = "flock -n ~/.locks/emacs emacs"
+qtcreator = "flock -n ~/.locks/qtcreator qtcreator"
+qtcreator2 = "flock -n ~/.locks/qtcreator2 qtcreator"
+nemo = "flock -n ~/.locks/nemo nemo"
+editor = os.getenv("EDITOR") or "nano"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -88,7 +95,6 @@ end
 -- Create a laucher widget and a main menu
 myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
-   { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", awesome.quit }
 }
@@ -173,6 +179,24 @@ mytasklist.buttons = awful.util.table.join(
                                               awful.client.focus.byidx(-1)
                                               if client.focus then client.focus:raise() end
                                           end))
+-- Initialize widget
+memwidget = widget({ type = "textbox" })
+-- Register widget
+vicious.register(memwidget, vicious.widgets.mem, "MEM: $1% free", 13)
+
+-- Initialize widget
+cputext = widget({ type = "textbox" })
+cputext.text= "CPU: ";
+
+-- Initialize widget
+cpuwidget = awful.widget.graph()
+-- Graph properties
+cpuwidget:set_width(50)
+cpuwidget:set_background_color("#494B4F")
+cpuwidget:set_color("#FF5656")
+cpuwidget:set_gradient_colors({ "#FF5656", "#88A175", "#AECF96" })
+-- Register widget
+vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
 
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
@@ -206,6 +230,9 @@ for s = 1, screen.count() do
         mylayoutbox[s],
 	kbdcfg.widget,
         mytextclock,
+	memwidget,
+	cpuwidget.widget,
+	cputext,
         s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
@@ -507,30 +534,36 @@ end)
 
 function spawn(command, class, tag, test)
     local test = test or "class"
-    local callback
-    callback = function(c, startup)
-	if test == "class" then
-	    if c.class == class then
-		awful.client.movetotag(tag, c)
-		client.remove_signal("manage", callback)
-	    end
-	elseif test == "instance" then
-	    if c.instance == class then
-		awful.client.movetotag(tag, c)
-		client.remove_signal("manage", callback)
-	    end
-	elseif test == "name" then
-	    if string.match(c.name, class) then
-		awful.client.movetotag(tag, c)
-		client.remove_signal("manage", callback)
+    if class then
+	local callback
+	callback = function(c, startup)
+	    if test == "class" then
+		if c.class == class then
+		    awful.client.movetotag(tag, c)
+		    client.remove_signal("manage", callback)
+		end
+	    elseif test == "instance" then
+		if c.instance == class then
+		    awful.client.movetotag(tag, c)
+		    client.remove_signal("manage", callback)
+		end
+	    elseif test == "name" then
+		if string.match(c.name, class) then
+		    awful.client.movetotag(tag, c)
+		    client.remove_signal("manage", callback)
+		end
 	    end
 	end
+	client.add_signal("manage", callback)
     end
-    client.add_signal("manage", callback)
     awful.util.spawn_with_shell(command)
 end
 
-spawn( "/usr/bin/qtcreator", "QtCreator", tags[1][2])
+spawn( qtcreator )
+spawn( qtcreator2, "QtCreator", tags[1][2])
+spawn( browser )
+spawn( nemo )
+spawn( emacs )
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
