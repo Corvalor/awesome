@@ -2,6 +2,33 @@
 local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
+
+-- {{{ Signals
+-- Signal function to execute when a new client appears.
+-- @DOC_MANAGE_HOOK@
+client.connect_signal("manage", function (c)
+    -- Set the windows at the slave,
+    -- i.e. put it at the end of others instead of setting it master.
+    -- if not awesome.startup then awful.client.setslave(c) end
+
+    if awesome.startup and
+      not c.size_hints.user_position
+      and not c.size_hints.program_position then
+        -- Prevent clients from being unreachable after screen count changes.
+        awful.placement.no_offscreen(c)
+    end
+    local matches = awful.rules.matching_rules( c, awful.rules.rules )
+    if table.getn( matches ) > 0 then
+        for key, match in pairs(matches) do
+	   if match.callback then
+               match.callback( c )
+	   end
+        end
+    end
+end)
+
+-- load tyrannical
+local tyrannical = require( "tyrannical" )
 require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
@@ -14,6 +41,9 @@ local menubar = require("menubar")
 local vicious = require("vicious")
 -- Load lain
 local lain = require("lain")
+local markup = lain.util.markup
+-- load autostart
+local autostart = require("autostart")
 
 local separators = lain.util.separators
 
@@ -92,17 +122,127 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
-tags = {}
-for s = 1, screen.count() do
+-- [[
+--tags = {}
+--for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    if s == 1 then
-       tags[s] = awful.tag({ "emacs", "qtcreator2" }, s, layouts[10])
-    elseif s == 2 then
-       tags[s] = awful.tag({ "web", "qtcreator", "terminal", "files", "various" }, s, layouts[10])
-    else 
-       tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
-    end
-end
+    --if s == 1 then
+       --tags[s] = awful.tag({ "emacs", "qtcreator2" }, s, layouts[10])
+    --elseif s == 2 then
+    --   tags[s] = awful.tag({ "web", "qtcreator", "terminal", "files", "various" }, s, layouts[10])
+   -- else 
+  --     tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+ --   end
+--end
+--]]
+
+tyrannical.tags = {
+    {
+        name        = "Emacs",                 -- Call the tag "Term"
+        init        = true,                   -- Load the tag on startup
+        exclusive   = true,                   -- Refuse any other type of clients (by classes)
+	force_screen= true,
+        screen      = 1,                  -- Create this tag on screen 1 and screen 2
+        layout      = awful.layout.suit.max, -- Use the tile layout
+        class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
+	   "emacs"
+        }
+    },
+    {
+        name        = "Web",
+        init        = true,
+        exclusive   = true,
+	force_screen= true,
+        screen      = 2,
+        layout      = awful.layout.suit.max,
+        class = { "qutebrowser"    }
+    },
+    {
+        name         = "QtCreator",
+        init         = true,
+        exclusive    = true,
+	force_screen = true,
+        screen       = 1,
+	max_clients  = 1,
+        layout       = awful.layout.suit.max,
+        class ={  "qtcreator:left" }
+    },
+    {
+        name         = "QtCreator",
+        init         = true,
+        exclusive    = true,
+	force_screen = true,
+        screen       = 2,
+	max_clients  = 1,
+        layout       = awful.layout.suit.max,
+        class ={  "qtcreator:right" }
+    },
+    {
+        name        = "Term",
+        init        = true,
+        exclusive   = true,
+	force_screen = true,
+        screen      = 2,
+        layout      = awful.layout.suit.max,
+        class  = {
+	   "xterm" , "urxvt" , "aterm","URxvt","XTerm","konsole","terminator","gnome-terminal",
+	   "xfce4-terminal"
+        }
+    } ,
+    {
+        name        = "Files",
+        init        = true,
+        exclusive   = true,
+	force_screen = true,
+        screen      = 2,
+        layout      = awful.layout.suit.max,
+        class  = {
+            "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm", "nemo"
+        }
+    } ,
+    {
+        name         = "various",
+        init         = true,
+        fallback     = true,
+	force_screen = true,
+        screen       = 2,
+        layout       = awful.layout.suit.max,
+        class  = {
+	   "evince"
+        }
+    } ,
+}
+
+
+
+-- Ignore the tag "exclusive" property for the following clients (matched by classes)
+tyrannical.properties.intrusive = {
+    "ksnapshot"     , "pinentry"       , "gtksu"     , "kcalc"        , "xcalc"               ,
+    "feh"           , "Gradient editor", "About KDE" , "Paste Special", "Background color"    ,
+    "kcolorchooser" , "plasmoidviewer" , "Xephyr"    , "kruler"       , "plasmaengineexplorer",
+}
+
+-- Ignore the tiled layout for the matching clients
+tyrannical.properties.floating = {
+    "MPlayer"      , "pinentry"        , "ksnapshot"  , "pinentry"     , "gtksu"          ,
+    "xine"         , "feh"             , "kmix"       , "kcalc"        , "xcalc"          ,
+    "yakuake"      , "Select Color$"   , "kruler"     , "kcolorchooser", "Paste Special"  ,
+    "New Form"     , "Insert Picture"  , "kcharselect", "mythfrontend" , "plasmoidviewer" 
+}
+
+-- Make the matching clients (by classes) on top of the default layout
+tyrannical.properties.ontop = {
+    "Xephyr"       , "ksnapshot"       , "kruler"
+}
+
+-- Force the matching clients (by classes) to be centered on the screen on init
+tyrannical.properties.placement = {
+    kcalc = awful.placement.centered
+}
+
+tyrannical.settings.block_children_focus_stealing = true --Block popups ()
+tyrannical.settings.group_children = true --Force popups/dialogs to have the same tags as the parent client
+
 -- }}}
 
 -- {{{ Menu
@@ -127,7 +267,24 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock()
+
+-- Textclock
+--os.setlocale(os.getenv("LANG")) -- to localize the clock
+local mytextclock = awful.widget.textclock()
+
+-- Calendar
+local cal = lain.widgets.calendar({
+    attach_to = { mytextclock },
+    cal = "/usr/bin/gcal",
+    followtag = true,
+    notification_preset = {
+	icon_size = 120,
+        font = theme.font,
+        fg   = theme.fg_normal,
+        bg   = theme.bg_normal,
+        we   = theme.border_focus
+    }
+})
 
 -- Activate the given keyboard layout
 function keyboard_switch( layout )
@@ -240,7 +397,7 @@ spr = wibox.widget.textbox(' ')
 arrl = wibox.widget.imagebox()
 arrl:set_image(beautiful.arrl)
 arrl_dl = separators.arrow_left( beautiful.bg_focus, "alpha" );
-arrl_ld = separators.arrow_left( "alpha", beautiful.bf_focus );
+arrl_ld = separators.arrow_left( "alpha", beautiful.bg_focus );
 
 arrr = wibox.widget.imagebox()
 arrr:set_image(beautiful.arrr)
@@ -375,6 +532,7 @@ for s = 1, screen.count() do
     right_layout_add(ramtext, ramwidget)
     right_layout_add(cputext, cpuwidget)
     right_layout_add(mytextclock)
+    --right_layout_add(cal)
     right_layout_add(mylayoutbox[s], kbdcfg.widget)
 
     -- Now bring it all together (with the tasklist in the middle)
@@ -529,7 +687,7 @@ clientbuttons = awful.util.table.join(
 
  --trigger client mode on Ctrl + w
  globalkeys = awful.util.table.join(globalkeys,
-    awful.key( { "Control" }, "w", function(c)
+    awful.key.new( { "Control" }, "w", function(c)
       keygrabber.run(function(mod, key, event)
         awful.tag.setmwfact( 1.00)
         if event == "release" then
@@ -550,7 +708,7 @@ clientbuttons = awful.util.table.join(
 	      simulateKey( key )
 	end
         return true
-      end)
+    end)
   end)
  )
 
@@ -576,15 +734,15 @@ end
   -- mapping for modal client keys
     client_mode = {
       -- Switch tags
-      d1 = function(c) awful.tag.viewonly(tags[mouse.screen][1]) end,
-      d2 = function(c) awful.tag.viewonly(tags[mouse.screen][2]) end,
-      d3 = function(c) awful.tag.viewonly(tags[mouse.screen][3]) end,
-      d4 = function(c) awful.tag.viewonly(tags[mouse.screen][4]) end,
-      d5 = function(c) awful.tag.viewonly(tags[mouse.screen][5]) end,
-      d6 = function(c) awful.tag.viewonly(tags[mouse.screen][6]) end,
-      d7 = function(c) awful.tag.viewonly(tags[mouse.screen][7]) end,
-      d8 = function(c) awful.tag.viewonly(tags[mouse.screen][8]) end,
-      d9 = function(c) awful.tag.viewonly(tags[mouse.screen][9]) end,
+      --d1 = function(c) awful.tag.viewonly(tags[mouse.screen][1]) end,
+      --d2 = function(c) awful.tag.viewonly(tags[mouse.screen][2]) end,
+      --d3 = function(c) awful.tag.viewonly(tags[mouse.screen][3]) end,
+      --d4 = function(c) awful.tag.viewonly(tags[mouse.screen][4]) end,
+      --d5 = function(c) awful.tag.viewonly(tags[mouse.screen][5]) end,
+      --d6 = function(c) awful.tag.viewonly(tags[mouse.screen][6]) end,
+      --d7 = function(c) awful.tag.viewonly(tags[mouse.screen][7]) end,
+      --d8 = function(c) awful.tag.viewonly(tags[mouse.screen][8]) end,
+      --d9 = function(c) awful.tag.viewonly(tags[mouse.screen][9]) end,
       -- Move left
       h = function ()
 	 if client.focus.class == 'Emacs' then
@@ -648,6 +806,12 @@ end
 	 end
 	 awful.client.run_or_raise( "qtcreator", matcher )
       end,
+      d = function()
+	 client.focus:kill()
+      end,
+      c = function(c)
+	 lain.widgets.calendar.show(7)
+      end,
       menu = function()
 	awful.util.spawn("dmenu_run -i -p 'Run command:' -nb '" .. 
 			beautiful.bg_normal .. "' -nf '" .. beautiful.fg_normal .. 
@@ -660,6 +824,7 @@ end
 root.keys(globalkeys)
 -- }}}
 
+qtcreator_distributor = true;
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
 awful.rules.rules = {
@@ -671,131 +836,40 @@ awful.rules.rules = {
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "MPlayer" },
-      properties = { floating = true } },
-    { rule = { class = "pinentry" },
-      properties = { floating = true } },
-    { rule = { class = "gimp" },
-      properties = { floating = true } },
-    { rule = { class = "Emacs" },
-      properties = { tag = tags[1][1],
-                     size_hints_honor = false } },
-    { rule = { class = "qutebrowser" },
-      properties = { tag = tags[2][1] } },
-    { rule = { class = "QtCreator" },
-      properties = { tag = tags[2][2] } },
-    { rule = { name = "Terminal" },
-      properties = { tag = tags[2][3],
-                     size_hints_honor = false} },
-    { rule = { class = "Nemo" },
-      properties = { tag = tags[2][4] } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
+    {
+        rule = { class = "QtCreator" },
+        callback = function(c)
+	    if qtcreator_distributor then
+		awful.client.property.set(c, "overwrite_class", "qtcreator:right")
+	    else
+		awful.client.property.set(c, "overwrite_class", "qtcreator:left")
+	    end
+	    qtcreator_distributor = false
+        end
+    }
 }
 -- }}}
 
--- {{{ Signals
--- Signal function to execute when a new client appears.
-client.connect_signal("manage", function (c, startup)
-    -- Enable sloppy focus
-    c:connect_signal("mouse::enter", function(c)
-        if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-            and awful.client.focus.filter(c) then
-            client.focus = c
-        end
-    end)
-
-    if not startup then
-        -- Set the windows at the slave,
-        -- i.e. put it at the end of others instead of setting it master.
-        -- awful.client.setslave(c)
-
-        -- Put windows in a smart way, only if they does not set an initial position.
-        if not c.size_hints.user_position and not c.size_hints.program_position then
-            awful.placement.no_overlap(c)
-            awful.placement.no_offscreen(c)
-        end
-    end
-
-    local titlebars_enabled = false
-    if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
-        -- buttons for the titlebar
-        local buttons = awful.util.table.join(
-                awful.button({ }, 1, function()
-                    client.focus = c
-                    c:raise()
-                    awful.mouse.client.move(c)
-                end),
-                awful.button({ }, 3, function()
-                    client.focus = c
-                    c:raise()
-                    awful.mouse.client.resize(c)
-                end)
-                )
-
-        -- Widgets that are aligned to the left
-        local left_layout = wibox.layout.fixed.horizontal()
-        left_layout:add(awful.titlebar.widget.iconwidget(c))
-        left_layout:buttons(buttons)
-
-        -- Widgets that are aligned to the right
-        local right_layout = wibox.layout.fixed.horizontal()
-        right_layout:add(awful.titlebar.widget.floatingbutton(c))
-        right_layout:add(awful.titlebar.widget.maximizedbutton(c))
-        right_layout:add(awful.titlebar.widget.stickybutton(c))
-        right_layout:add(awful.titlebar.widget.ontopbutton(c))
-        right_layout:add(awful.titlebar.widget.closebutton(c))
-
-        -- The title goes in the middle
-        local middle_layout = wibox.layout.flex.horizontal()
-        local title = awful.titlebar.widget.titlewidget(c)
-        title:set_align("center")
-        middle_layout:add(title)
-        middle_layout:buttons(buttons)
-
-        -- Now bring it all together
-        local layout = wibox.layout.align.horizontal()
-        layout:set_left(left_layout)
-        layout:set_right(right_layout)
-        layout:set_middle(middle_layout)
-
-        awful.titlebar(c):set_widget(layout)
+-- Enable sloppy focus, so that focus follows mouse.
+client.connect_signal("mouse::enter", function(c)
+    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+        and awful.client.focus.filter(c) then
+        client.focus = c
     end
 end)
 
-function spawn(command, class, tag, test)
-    local test = test or "class"
-    if class then
-	local callback
-	callback = function(c, startup)
-	    if test == "class" then
-		if c.class == class then
-		    awful.client.movetotag(tag, c)
-		    client.disconnect_signal("manage", callback)
-		end
-	    elseif test == "instance" then
-		if c.instance == class then
-		    awful.client.movetotag(tag, c)
-		    client.disconnect_signal("manage", callback)
-		end
-	    elseif test == "name" then
-		if string.match(c.name, class) then
-		    awful.client.movetotag(tag, c)
-		    client.disconnect_signal("manage", callback)
-		end
-	    end
-	end
-	client.connect_signal("manage", callback)
+function spawn(command, wm_cl)
+    local matcher = function (c)
+	return awful.rules.match( c, {class = "Emacs" } )
     end
-    awful.util.spawn_with_shell(command)
+    awful.client.run_or_raise( "emacs", matcher )
 end
 
-spawn( qtcreator )
-spawn( qtcreator2, "QtCreator", tags[1][2])
-spawn( browser )
---spawn( nemo )
-spawn( emacs )
+autostart( 'qtcreator' )
+autostart( "qutebrowser" )
+autostart( "nemo" )
+autostart( "Emacs" )
+autostart( 'xfce4-terminal' )
 
 client.connect_signal("focus",
 		      function(c)
@@ -805,4 +879,5 @@ client.connect_signal("unfocus",
 		      function(c)
 			 c.border_color = beautiful.border_normal
                       end)
+
 -- }}}
