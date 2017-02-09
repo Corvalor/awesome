@@ -814,7 +814,7 @@ end
 	 client.focus:kill()
       end,
       c = function(c)
-	 lain.widgets.calendar.show(7)
+	 lain.widget.calendar.show(7)
       end,
       menu = function()
 	awful.util.spawn("dmenu_run -i -p 'Run command:' -nb '" .. 
