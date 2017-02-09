@@ -7,12 +7,6 @@
 [submodule "lain"]
 	path = lain
 	url = https://github.com/CKnappe/lain.git
-[submodule "awesome34-themes"]
-	path = awesome34-themes
-	url = https://github.com/serialoverflow/awesome34-themes.git
-[submodule "awesome-copycats"]
-	path = awesome-copycats
-	url = https://github.com/copycat-killer/awesome-copycats.git
 [submodule "vicious"]
 	path = vicious
 	url = http://git.sysphere.org/vicious
