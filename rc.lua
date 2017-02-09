@@ -273,18 +273,20 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 local mytextclock = awful.widget.textclock()
 
 -- Calendar
-local cal = lain.widgets.calendar({
+local cal = lain.widget.calendar({
     attach_to = { mytextclock },
-    cal = "/usr/bin/gcal",
+    cal = "/usr/bin/gcal -s1",
     followtag = true,
     notification_preset = {
 	icon_size = 120,
         font = theme.font,
         fg   = theme.fg_normal,
         bg   = theme.bg_normal,
-        we   = theme.border_focus
+        we   = theme.border_normal
     }
 })
+
+lain.widget.contrib.task.attach( mytextclock );
 
 -- Activate the given keyboard layout
 function keyboard_switch( layout )

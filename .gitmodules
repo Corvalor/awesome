@@ -6,7 +6,7 @@
 	url = https://github.com/alexander-yakushev/menubar.git
 [submodule "lain"]
 	path = lain
-	url = https://github.com/copycat-killer/lain.git
+	url = https://github.com/CKnappe/lain.git
 [submodule "awesome34-themes"]
 	path = awesome34-themes
 	url = https://github.com/serialoverflow/awesome34-themes.git

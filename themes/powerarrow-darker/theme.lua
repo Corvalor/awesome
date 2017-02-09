@@ -87,4 +87,11 @@ theme.tasklist_floating             = ""
 theme.tasklist_maximized_horizontal = ""
 theme.tasklist_maximized_vertical   = ""
 
+theme.org_todo                      = "#FFFF00"
+theme.org_level_1                   = "#FD971F"
+theme.org_level_2                   = "#EF5939"
+theme.org_level_3                   = "#F92672"
+theme.org_level_4                   = "#960050"
+theme.org_level_5                   = "#AE81FF"
+
 return theme
