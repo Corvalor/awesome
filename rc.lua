@@ -749,7 +749,7 @@ end
       --d9 = function(c) awful.tag.viewonly(tags[mouse.screen][9]) end,
       -- Move left
       h = function ()
-	 if client.focus.class == 'Emacs' then
+	 if client.focus and client.focus.class == 'Emacs' then
 	    passThrough()
 	    simulateKey( 'h' )
 	 else 
@@ -758,7 +758,7 @@ end
       end,
       -- Move right
       l = function ()
-	 if client.focus.class == 'Emacs' then
+	 if client.focus and client.focus.class == 'Emacs' then
 	    passThrough()
 	    simulateKey( 'l' )
 	 else 
@@ -767,14 +767,14 @@ end
       end,
       -- Move down
       j = function (c)
-	 if client.focus.class == 'Emacs' then
+	 if client.focus and client.focus.class == 'Emacs' then
 	    passThrough()
 	    simulateKey( 'j' )
 	 end
       end,
       -- Move down
       k = function (c)
-	 if client.focus.class == 'Emacs' then
+	 if client.focus and client.focus.class == 'Emacs' then
 	     passThrough()
 	     simulateKey( 'k' )
 	 end
