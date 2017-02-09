@@ -3,6 +3,8 @@ local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
 
+local settings = require("settings")
+
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
 -- @DOC_MANAGE_HOOK@
@@ -18,7 +20,7 @@ client.connect_signal("manage", function (c)
         awful.placement.no_offscreen(c)
     end
     local matches = awful.rules.matching_rules( c, awful.rules.rules )
-    if table.getn( matches ) > 0 then
+    if #matches > 0 then
         for key, match in pairs(matches) do
 	   if match.callback then
                match.callback( c )
@@ -871,7 +873,7 @@ autostart( 'qtcreator' )
 autostart( "qutebrowser" )
 autostart( "nemo" )
 autostart( "Emacs" )
-autostart( 'xfce4-terminal' )
+autostart( settings.Terminal )
 
 client.connect_signal("focus",
 		      function(c)
