@@ -277,7 +277,7 @@ local mytextclock = awful.widget.textclock()
 -- Calendar
 local cal = lain.widget.calendar({
     attach_to = { mytextclock },
-    cal = "/usr/bin/gcal -s1",
+    cal = "gcal -s1",
     followtag = true,
     notification_preset = {
 	icon_size = 120,
