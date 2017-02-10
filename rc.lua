@@ -116,8 +116,13 @@ local layouts =
 
 -- {{{ Wallpaper
 if beautiful.wallpaper then
-    for s = 1, screen.count() do
-       gears.wallpaper.maximized(beautiful.wallpaper[s], s, true)
+    for s in screen do
+       local g = s.geometry
+       if g.width > g.height then
+	   gears.wallpaper.maximized(beautiful.wallpaper[1], s.index, true)
+       else
+	   gears.wallpaper.maximized(beautiful.wallpaper[2], s.index, true)
+       end
     end
 end
 -- }}}

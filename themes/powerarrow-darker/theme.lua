@@ -10,8 +10,8 @@ theme                               = {}
 
 themes_dir                          = os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-darker"
 theme.wallpaper = {}
-theme.wallpaper[1]                     = themes_dir .. "/../molokai/background_rot.jpg"
-theme.wallpaper[2]                     = themes_dir .. "/../molokai/background.jpg"
+theme.wallpaper[1]                     = themes_dir .. "/../molokai/background.jpg"
+theme.wallpaper[2]                     = themes_dir .. "/../molokai/background_rot.jpg"
 
 theme.font                          = "Consolas 10"
 theme.fg_normal     = "#aaaaaa"
