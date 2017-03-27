@@ -2,6 +2,7 @@
 local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
+awful.autofocus = require("awful.autofocus")
 
 local settings = require("settings")
 
@@ -31,11 +32,11 @@ end)
 
 -- load tyrannical
 local tyrannical = require( "tyrannical" )
-require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
+local radical = require("radical")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
@@ -48,6 +49,7 @@ local markup = lain.util.markup
 local autostart = require("autostart")
 
 local separators = lain.util.separators
+
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -74,19 +76,24 @@ do
 end
 -- }}}
 
+
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 --beautiful.init("~/.config/awesome/themes/molokai/theme.lua")
 beautiful.init("~/.config/awesome/themes/powerarrow-darker/theme.lua")
+local menu = radical.context{
+   column = 2,
+   layout = radical.layout.grid,
+   arrow_type = radical.base.arrow_type.PRETTY,
+   style = radical.style.arrow
+}
+
+menu:add_item {text="Screen 1\nabc",button1=function(_menu,item,mods) print("Hello World! ") end}
+menu:add_item {text="Screen 9\nabc",icon= beautiful.awesome_icon}
 
 
 -- This is used later as the default terminal and editor to run.
-browser = "flock -n ~/.locks/qutebrowser qutebrowser"
-terminal = "flock -n ~/.locks/xfce4-terminal xfce4-terminal"
-emacs = "flock -n ~/.locks/emacs emacs"
-qtcreator = "flock -n ~/.locks/qtcreator qtcreator"
-qtcreator2 = "flock -n ~/.locks/qtcreator2 qtcreator"
-nemo = "flock -n ~/.locks/nemo nemo"
+terminal = os.getenv("TERM") or "xterm"
 editor = os.getenv("EDITOR") or "nano"
 
 -- Default modkey.
@@ -113,6 +120,7 @@ local layouts =
     awful.layout.suit.magnifier
 }
 -- }}}
+
 
 -- {{{ Wallpaper
 if beautiful.wallpaper then
@@ -215,7 +223,7 @@ tyrannical.tags = {
         screen       = 2,
         layout       = awful.layout.suit.max,
         class  = {
-	   "evince"
+	   "evince", "epdfview", "Epdfview", "backend"
         }
     } ,
 }
@@ -302,6 +310,7 @@ function keyboard_switch( layout )
   os.execute( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
 end
 
+
 -- Keyboard map indicator and changer
 kbdcfg = {}
 kbdcfg.cmd = "setxkbmap"
@@ -371,7 +380,9 @@ mytasklist.buttons = awful.util.table.join(
                                               if client.focus then client.focus:raise() end
                                           end))
 
+
 memwidget = wibox.widget.textbox()
+memwidget:set_menu(menu) -- 3 = right mouse button, 1 = left mouse button
 vicious.register(memwidget, vicious.widgets.fs, "MEM:${/ avail_mb} MB", 13)
 
 -- Initialize widget
@@ -616,7 +627,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run({ prompt = "Run Lua code: " },
-                  mypromptbox[mouse.screen].widget,
+                  mypromptbox[mouse.screen.index].widget,
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
               end),
@@ -694,140 +705,7 @@ clientbuttons = awful.util.table.join(
     awful.button({ modkey }, 1, awful.mouse.client.move),
     awful.button({ modkey }, 3, awful.mouse.client.resize))
 
- --trigger client mode on Ctrl + w
- globalkeys = awful.util.table.join(globalkeys,
-    awful.key.new( { "Control" }, "w", function(c)
-      keygrabber.run(function(mod, key, event)
-        awful.tag.setmwfact( 1.00)
-        if event == "release" then
-            return true
-        end
-        keygrabber.stop()
-        if client_mode[key] then client_mode[key](c)
-	elseif key == ";" then client_mode["menu"](c)
-	elseif key == "1" then client_mode["d1"](c)
-        elseif key == "2" then client_mode["d2"](c)
-        elseif key == "3" then client_mode["d3"](c)
-        elseif key == "4" then client_mode["d4"](c)
-        elseif key == "5" then client_mode["d5"](c)
-        elseif key == "6" then client_mode["d6"](c)
-        elseif key == "7" then client_mode["d7"](c)
-        elseif key == "8" then client_mode["d8"](c) else
-	      passThrough()
-	      simulateKey( key )
-	end
-        return true
-    end)
-  end)
- )
-
-function passThrough()
-    root.fake_input('key_release', 'Control_L')
-    root.fake_input('key_release', 'Shift_L')
-    root.fake_input('key_release', 'W')
-
-    root.fake_input('key_press', 'Control_L')
-    root.fake_input('key_press', 'Shift_L')
-    root.fake_input('key_press', 'W')
-    root.fake_input('key_release', 'W')
-    root.fake_input('key_release', 'Shift_L')
-    root.fake_input('key_release', 'Control_L')
-end
-
-function simulateKey( key )
-    root.fake_input('key_release', key)
-    root.fake_input('key_press', key)
-    root.fake_input('key_release', key)
-end
-
-  -- mapping for modal client keys
-    client_mode = {
-      -- Switch tags
-      --d1 = function(c) awful.tag.viewonly(tags[mouse.screen][1]) end,
-      --d2 = function(c) awful.tag.viewonly(tags[mouse.screen][2]) end,
-      --d3 = function(c) awful.tag.viewonly(tags[mouse.screen][3]) end,
-      --d4 = function(c) awful.tag.viewonly(tags[mouse.screen][4]) end,
-      --d5 = function(c) awful.tag.viewonly(tags[mouse.screen][5]) end,
-      --d6 = function(c) awful.tag.viewonly(tags[mouse.screen][6]) end,
-      --d7 = function(c) awful.tag.viewonly(tags[mouse.screen][7]) end,
-      --d8 = function(c) awful.tag.viewonly(tags[mouse.screen][8]) end,
-      --d9 = function(c) awful.tag.viewonly(tags[mouse.screen][9]) end,
-      -- Move left
-      h = function ()
-	 if client.focus and client.focus.class == 'Emacs' then
-	    passThrough()
-	    simulateKey( 'h' )
-	 else 
-	     awful.screen.focus_relative( 1)
-	 end
-      end,
-      -- Move right
-      l = function ()
-	 if client.focus and client.focus.class == 'Emacs' then
-	    passThrough()
-	    simulateKey( 'l' )
-	 else 
-	     awful.screen.focus_relative(-1)
-	 end
-      end,
-      -- Move down
-      j = function (c)
-	 if client.focus and client.focus.class == 'Emacs' then
-	    passThrough()
-	    simulateKey( 'j' )
-	 end
-      end,
-      -- Move down
-      k = function (c)
-	 if client.focus and client.focus.class == 'Emacs' then
-	     passThrough()
-	     simulateKey( 'k' )
-	 end
-      end,
-      -- Start qutebrowser
-      z = function (c)
-	 local matcher = function (c)
-	    return awful.rules.match( c, {class = "qutebrowser" } )
-	 end
-	 awful.client.run_or_raise( "qutebrowser", matcher )
-      end,
-      e = function()
-	 local matcher = function (c)
-	    return awful.rules.match( c, {class = "Emacs" } )
-	 end
-	 awful.client.run_or_raise( "emacs", matcher )
-      end,
-      t = function()
-	 local matcher = function (c)
-	    return awful.rules.match( c, {class = "Lxterminal" } )
-	 end
-	 awful.client.run_or_raise( "lxterminal", matcher )
-      end,
-      n = function()
-	 local matcher = function (c)
-	    return awful.rules.match( c, {class = "Nemo" } )
-	 end
-	 awful.client.run_or_raise( "nemo", matcher )
-      end,
-      q = function()
-	 local matcher = function (c)
-	    return awful.rules.match( c, {class = "QtCreator" } )
-	 end
-	 awful.client.run_or_raise( "qtcreator", matcher )
-      end,
-      d = function()
-	 client.focus:kill()
-      end,
-      c = function(c)
-	 lain.widget.calendar.show(7)
-      end,
-      menu = function()
-	awful.util.spawn("dmenu_run -i -p 'Run command:' -nb '" .. 
-			beautiful.bg_normal .. "' -nf '" .. beautiful.fg_normal .. 
-			"' -sb '" .. beautiful.bg_focus .. 
-			"' -sf '" .. beautiful.fg_focus .. "'") 
-      end
-    }
+require ("modal_keybindings")
 
 -- Set keys
 root.keys(globalkeys)
@@ -847,6 +725,17 @@ awful.rules.rules = {
                      buttons = clientbuttons } },
     {
         rule = { class = "QtCreator" },
+        callback = function(c)
+	    if qtcreator_distributor then
+		awful.client.property.set(c, "overwrite_class", "qtcreator:right")
+	    else
+		awful.client.property.set(c, "overwrite_class", "qtcreator:left")
+	    end
+	    qtcreator_distributor = false
+        end
+    },
+    {
+        rule = { class = "qtcreator-bin" },
         callback = function(c)
 	    if qtcreator_distributor then
 		awful.client.property.set(c, "overwrite_class", "qtcreator:right")

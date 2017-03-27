@@ -16,3 +16,6 @@
 [submodule "autostart"]
 	path = autostart
 	url = https://github.com/CKnappe/awesome-autostart.git
+[submodule "radical"]
+	path = radical
+	url = https://github.com/Elv13/radical.git
