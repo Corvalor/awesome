@@ -14,18 +14,7 @@ local help = require("help")
 	-- Ignore Shift
 	if key == "Shift_R" then return true end
         keygrabber.stop()
-        if client_mode[key] then client_mode[key].cb(c)
-	elseif key == ";" then client_mode["menu"](c)
-	elseif key == "1" then client_mode["d1"](c)
-        elseif key == "2" then client_mode["d2"](c)
-        elseif key == "3" then client_mode["d3"](c)
-        elseif key == "4" then client_mode["d4"](c)
-        elseif key == "5" then client_mode["d5"](c)
-        elseif key == "6" then client_mode["d6"](c)
-        elseif key == "7" then client_mode["d7"](c)
-        elseif key == "8" then client_mode["d8"](c)
-        elseif key == "9" then client_mode["d9"](c)
-        elseif key == "0" then client_mode["d0"](c) else
+        if client_mode[key] then client_mode[key].cb(c) else
 	      passThrough()
 	      simulateKey( key )
 	end
@@ -55,32 +44,34 @@ end
 
 current_task_id = nil;
 
+client_mode = {
+}
+client_mode_order = {
+}
 function AddModularKeybinding( key, help, callback)
    client_mode[key] = { h = help,
 			cb = callback };
+   client_mode_order[#client_mode_order + 1] = key;
 end
-  -- mapping for modal client keys
-    client_mode = {
-    }
 
     -- Switch tags
-      AddModularKeybinding( "1", "Switch to tag 1",
+      AddModularKeybinding( "1", "Switch to tag  1",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[1]) end )
-      AddModularKeybinding( "2", "Switch to tag 2",
+      AddModularKeybinding( "2", "Switch to tag  2",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[2]) end )
-      AddModularKeybinding( "3", "Switch to tag 3",
+      AddModularKeybinding( "3", "Switch to tag  3",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[3]) end )
-      AddModularKeybinding( "4", "Switch to tag 4",
+      AddModularKeybinding( "4", "Switch to tag  4",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[4]) end )
-      AddModularKeybinding( "5", "Switch to tag 5",
+      AddModularKeybinding( "5", "Switch to tag  5",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[5]) end )
-      AddModularKeybinding( "6", "Switch to tag 6",
+      AddModularKeybinding( "6", "Switch to tag  6",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[6]) end )
-      AddModularKeybinding( "7", "Switch to tag 7",
+      AddModularKeybinding( "7", "Switch to tag  7",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[7]) end )
-      AddModularKeybinding( "8", "Switch to tag 8",
+      AddModularKeybinding( "8", "Switch to tag  8",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[8]) end )
-      AddModularKeybinding( "9", "Switch to tag 9",
+      AddModularKeybinding( "9", "Switch to tag  9",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[9]) end )
       AddModularKeybinding( "0", "Switch to tag 10",
 			    function(c) awful.tag.viewonly(awful.screen.focused().tags[10]) end )
@@ -226,7 +217,7 @@ end
 	    current_task_id = nil;
 	 end
       end )
-      AddModularKeybinding( "p", "Undefined",
+      AddModularKeybinding( "p", "Move tag to other screen",
 			    function()
 	 local t = awful.screen.focused() and awful.screen.focused().selected_tag or nil
 	 if t then

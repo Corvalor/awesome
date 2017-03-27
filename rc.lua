@@ -68,6 +68,9 @@ do
         if in_error then return end
         in_error = true
 
+    file = io.open("/home/cknappe/test2.txt","a")
+    io.output(file)
+    io.write("test: " .. err )
         naughty.notify({ preset = naughty.config.presets.critical,
                          title = "Oops, an error happened!",
                          text = err })
@@ -80,7 +83,12 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 --beautiful.init("~/.config/awesome/themes/molokai/theme.lua")
-beautiful.init("~/.config/awesome/themes/powerarrow-darker/theme.lua")
+beautiful.init(awful.util.getdir("config") .. "themes/default/theme.lua")
+--path = awful.util.getdir("config") .. "blind/arrow/themeZilla.lua"
+--path = awful.util.getdir("config") .. "blind/arrow/theme.lua"
+--path = awful.util.getdir("config") .. "blind/arrow/themeSciFi.lua"
+beautiful.init(path)
+local theme = beautiful.get()
 local menu = radical.context{
    column = 2,
    layout = radical.layout.grid,
@@ -413,7 +421,6 @@ cpuwidget:set_color({ type = "linear", from = { 0, 0 }, to = { 10,0 }, stops = {
 vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
 
 -- Separators
-spr = wibox.widget.textbox(' ')
 arrl = wibox.widget.imagebox()
 arrl:set_image(beautiful.arrl)
 arrl_dl = separators.arrow_left( beautiful.bg_focus, "alpha" );
@@ -777,5 +784,6 @@ client.connect_signal("unfocus",
 		      function(c)
 			 c.border_color = beautiful.border_normal
                       end)
+
 
 -- }}}

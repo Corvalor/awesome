@@ -8,7 +8,7 @@
 
 theme                               = {}
 
-themes_dir                          = os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-darker"
+themes_dir                          = os.getenv("HOME") .. "/.config/awesome/themes/default"
 theme.wallpaper = {}
 theme.wallpaper[1]                     = themes_dir .. "/../molokai/background.jpg"
 theme.wallpaper[2]                     = themes_dir .. "/../molokai/background_rot.jpg"
