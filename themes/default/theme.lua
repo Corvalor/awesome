@@ -9,25 +9,37 @@
 theme                               = {}
 
 themes_dir                          = os.getenv("HOME") .. "/.config/awesome/themes/default"
+theme.path                          =  themes_dir .. "/"
+theme.icon_path                     =  theme.path .. "icons/"
 theme.wallpaper = {}
-theme.wallpaper[1]                     = themes_dir .. "/../molokai/background.jpg"
-theme.wallpaper[2]                     = themes_dir .. "/../molokai/background_rot.jpg"
+theme.wallpaper[1]                  = themes_dir .. "/wall.png"
+theme.wallpaper[2]                  = themes_dir .. "/wall.png"
 
 theme.font                          = "Consolas 10"
-theme.fg_normal     = "#aaaaaa"
-theme.fg_focus      = "#ffffff"
-theme.fg_urgent     = "#ffffff"
-theme.bg_normal                     = "#1A1A1A"
-theme.bg_focus                      = "#313131"
+theme.fg_normal                     = "#aaaaaa"
+theme.fg_focus                      = "#ffffff"
+theme.fg_urgent                     = "#ffffff"
+theme.bg_normal_outer               = "#000000"
+theme.bg_normal_inner               = "#222222"
+theme.bg_normal_gradient            = "linear:0,0:0,22:0,"..theme.bg_normal_outer..":0.5,"..theme.bg_normal_inner..":2,"..theme.bg_normal_outer
+theme.bg_normal                     = "#111111"
+theme.bg_alternate_outer            = "#1A1A1A"
+theme.bg_alternate_inner            = "#3C3C3C"
+theme.bg_alternate                  = "linear:0,0:0,22:0,"..theme.bg_alternate_outer..":0.5,"..theme.bg_alternate_inner..":2,"..theme.bg_alternate_outer
+theme.bg_focus_outer                = "#333333"
+theme.bg_focus_inner                = "#555555"
+theme.bg_focus_gradient             = "linear:0,0:0,22:0,"..theme.bg_focus_outer..":0.5,"..theme.bg_focus_inner..":2,"..theme.bg_focus_outer
+theme.bg_focus                      = "#444444"
 theme.bg_urgent                     = "#1A1A1A"
 theme.border_width                  = "1"
 theme.border_normal                 = "#3F3F3F"
-theme.border_focus                  = "#7F7F7F"
+theme.border_focus                  = "#A00000"
 theme.border_marked                 = "#CC9393"
 theme.titlebar_bg_focus             = "#FFFFFF"
 theme.titlebar_bg_normal            = "#FFFFFF"
+theme.taglist_bg_focus              = theme.bg_focus
 theme.taglist_fg_focus              = "#9999FF"
-theme.tasklist_bg_focus             = "#1A1A1A"
+theme.tasklist_bg_focus             = theme.bg_focus
 theme.tasklist_fg_focus             = "#9999FF"
 theme.textbox_widget_margin_top     = 1
 theme.notify_fg                     = theme.fg_normal
@@ -82,7 +94,7 @@ theme.widget_vol_mute               = themes_dir .. "/icons/vol_mute.png"
 theme.widget_mail                   = themes_dir .. "/icons/mail.png"
 theme.widget_mail_on                = themes_dir .. "/icons/mail_on.png"
 
-theme.tasklist_disable_icon         = true
+--theme.tasklist_disable_icon         = true
 theme.tasklist_floating             = ""
 theme.tasklist_maximized_horizontal = ""
 theme.tasklist_maximized_vertical   = ""
@@ -93,5 +105,7 @@ theme.org_level_2                   = "#EF5939"
 theme.org_level_3                   = "#F92672"
 theme.org_level_4                   = "#960050"
 theme.org_level_5                   = "#AE81FF"
+
+theme.useless_gap = 0.35
 
 return theme

@@ -1,4 +1,5 @@
 local awful = require("awful")
+awful.util = require("awful.util")
 local lain = require("lain")
 local markup = lain.util.markup
 local beautiful = require("beautiful")
@@ -8,7 +9,7 @@ local help = require("help")
  globalkeys = awful.util.table.join(globalkeys,
     awful.key.new( { "Control" }, "w", function(c)
       keygrabber.run(function(mod, key, event)
-        awful.tag.setmwfact( 1.00)
+        --awful.tag.setmwfact( 1.00)
 	-- Ignore Button release
         if event == "release" then return true end
 	-- Ignore Shift
