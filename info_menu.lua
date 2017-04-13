@@ -1,6 +1,7 @@
 local wibox     = require("wibox")
 local gears     = require("gears")
 local beautiful = require("beautiful")
+local awful = require("awful")
 local inspect   = require("inspect")
 
 function dump(o)
@@ -27,6 +28,7 @@ local function new(args)
     local border_width = 2
 
     local result = wibox()
+    result.sections = {}
     result.x = 20
     result.y = 20
     result.width = 10
@@ -73,9 +75,13 @@ local function new(args)
 	self.width = fit_w
 	self.height = fit_h
 	self.visible = new_visibility
+	self.screen = parent.screen
 	self.opacity = opacity
-	self.x = parent.x
 	local x_offset = (parent.width - self.width) / 2
+	local cur_screen = awful.screen.focused()
+	if cur_screen then
+	   x_offset = x_offset + cur_screen.geometry.x
+	end
 	self.x = parent.x + x_offset
     end
     function result.add_header( text, right_widget )
@@ -107,12 +113,17 @@ local function new(args)
 	new_current_part_outer_bg.bg = beautiful.bg_alternate_outer
 	self.add_widget( new_current_part_outer_bg )
 	self.current_part = new_current_part
+	self.sections[text] = new_current_part
     end
-    function result.add_widget( widget )
-	if self.current_part then
-	    self.current_part:add(widget)
+    function result.add_widget( widget, section_override )
+        if section_override then
+	   self.sections[section_override]:add(widget)
 	else
-	    grid:add(widget)
+	    if self.current_part then
+		self.current_part:add(widget)
+	    else
+		grid:add(widget)
+	    end
 	end
     end
 
@@ -122,6 +133,10 @@ local function new(args)
 
     function result.previewOff(result, result2)
 	self.toggle(result2, true)
+    end
+
+    function result.clear( section )
+       self.sections[section].children = {}
     end
 
     return result

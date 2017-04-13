@@ -11,6 +11,8 @@ local gears = require("gears")
 local dateInfo = require( "date_info" )
 local cpuInfo = require( "cpu_info" )
 local ramInfo = require( "ram_info" )
+local taskInfo = require( "task_info" )
+local memInfo = require( "mem_info" )
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
@@ -34,8 +36,10 @@ local layouts =
 local mytextclock = awful.widget.textclock()
 
 local clock       = dateInfo(nil)
+local mem       = memInfo(nil)
 local cpu       = cpuInfo(nil)
 local ram       = ramInfo(nil)
+local task       = taskInfo(nil)
 
 -- Calendar
 local cal = lain.widget.calendar({
@@ -104,22 +108,6 @@ mytasklist.buttons = awful.util.table.join(
                                           end))
 
 
-local menu = radical.context{
-   layout = radical.layout.grid,
-   column = 2,
-   arrow_type = radical.base.arrow_type.PRETTY,
-   style = radical.style.arrow,
-   item_style=radical.item.style.basic
-}
-
-menu:add_item {text="Screen 1\nabc",button1=function(_menu,item,mods) print("Hello World! ") end}
-menu:add_item {text="Screen 9\nabc",icon= beautiful.awesome_icon}
-
-
-memwidget = wibox.widget.textbox()
-memwidget:set_menu(menu) -- 3 = right mouse button, 1 = left mouse button
-
-vicious.register(memwidget, vicious.widgets.fs, "MEM:${/ avail_mb} MB", 13)
 
 function create_wavy(col1, col2, fill)
    local wavy = { height = 0, width = 14 }
@@ -465,14 +453,11 @@ for s = 1, screen.count() do
     end
 
     --right_layout:add(wibox.widget.systray())
-    right_layout_add(memwidget)
+    right_layout_add(mem)
     right_layout_add(ram)
-    --right_layout_add(ramtext, ramwidget)
-    --right_layout_add(cputext, cpuwidget)
     right_layout_add(cpu)
-    --right_layout_add(mytextclock)
+    right_layout_add(task)
     right_layout_add(clock)
-    --right_layout_add(cal)
     right_layout_add(mylayoutbox[s], kbdcfg.widget)
 
     -- Now bring it all together (with the tasklist in the middle)

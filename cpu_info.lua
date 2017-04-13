@@ -220,6 +220,9 @@ local function init()
     --Load Cpu model
     local pipeIn = io.popen('cat /proc/cpuinfo | grep "model name" | cut -d ":" -f2 | head -n 1',"r")
     local cpuName = pipeIn:read("*all") or "N/A"
+    cpuName = cpuName:gsub( "^ ", "")
+    cpuName = cpuName:gsub( "\n$", "")
+    --error(cpuName)
     pipeIn:close()
 
     cpuModel:set_text(cpuName)
@@ -237,30 +240,6 @@ local function new(margin, args)
     --Toggle visibility if no argument given or set visibility. Return current visibility
     procMenu = wibox.layout.fixed.vertical()
     init()
-    cpuInfoModule.toggle=function(parent_widget)
-        if not data.menu then
-            init()
-
-            local imb = wibox.widget.imagebox()
-            imb:set_image(beautiful.path .. "Icon/reload.png")
-            imb:buttons(button({ }, 1, function (geo) cpuInfoModule.refresh() end))
-
-            data.menu = menu({item_width=198,width=200,arrow_type=radical.base.arrow_type.CENTERED})
-            data.menu:add_widget(radical.widgets.header(data.menu,"Info")  , {height = 20  , width = 200})
-            data.menu:add_widget(modelWl         , {height = 40  , width = 200})
-            data.menu:add_widget(radical.widgets.header(data.menu,"Usage")   , {height = 20  , width = 200})
-            data.menu:add_widget(volUsage        , {height = 30  , width = 200})
-            data.menu:add_widget(cpuWidgetArrayL         , {width = 200})
-            data.menu:add_widget(radical.widgets.header(data.menu,"Process",{suffix_widget=imb}) , {height = 20  , width = 200})
-            data.menu:add_embeded_menu(procMenu)
-        end
-        if not data.menu.visible then
-            cpuInfoModule.refresh()
-        end
---         data.menu.visible = visibility or (not data.menu.visible)
-
-        return data.menu
-    end
 
     local imb = wibox.widget.imagebox()
     imb:set_image(beautiful.icon_path .. "reload.png")

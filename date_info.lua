@@ -307,6 +307,12 @@ local function new(screen, args)
   right_layout:connect_signal( "mouse::enter", dateInfoMenu.previewOn )
   right_layout:connect_signal( "mouse::leave", dateInfoMenu.previewOff )
 
+    local f=io.popen("task '(status:pending|status:waiting)' export")
+    if f ~= nil then
+        local wData=json.decode(f:read("*all"), 1, nil)
+	--error(inspect(#wData))
+    end
+
   return right_layout
 end
 
