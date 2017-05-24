@@ -1,0 +1,17 @@
+(
+    (nil
+	    . (( eval
+			 . (progn
+				    (defun update-compile-commands ()
+					(setq real-compile-command "")
+					(setq short-doxy-command "")
+					(setq category-doxy-command "")
+					(setq long-doxy-command "")
+					(setq debug-command "")
+					(setq iwyu-command "")
+				    )
+				(update-compile-commands)
+			    )
+		))
+    )
+)
