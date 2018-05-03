@@ -170,19 +170,23 @@ local function new(screen, args)
     function update( year, month, day )
       day = day or 0
       local fg   = theme.fg_normal
+      local fg_unfocus   = theme.bg_focus_inner
       local bg   = theme.bg_normal
       local we   = theme.border_normal
-      local f = io.popen('/usr/bin/cal -m ' .. month .. " " .. year ,"r")
+      local f = io.popen('/usr/bin/ncal -b -m ' .. month .. " " .. year ,"r")
       local title = f:read()
       local description = f:read()
       local calendar_data = f:read( "*all" ) 
-      calendar_data = calendar_data:gsub("(%d%d%d%d)", "%1 ")
-      calendar_data = calendar_data:gsub('(%d+%s%s%s)(%s\n)', markup.color(we, bg, '%1')..'%2')
-      calendar_data = calendar_data:gsub('(%d+%s+%d+)(%s\n)', markup.color(we, bg, '%1') .. '%2')
-      calendar_data = calendar_data:gsub('(%d+)(%s\n)', markup.color(we, bg, '%1')..'%2')
-      calendar_data = calendar_data:gsub('%s\n','\n')
-      calendar_data = calendar_data:gsub("[\n%s]+$", "")
-      calendar_data = calendar_data:gsub("\n+$", "")
+      --calendar_data = calendar_data:gsub("(%d%d%d%d)", "%1 ")
+      --calendar_data = calendar_data:gsub('(%d+%s%s%s)(%s\n)', markup.color(we, bg, '%1')..'%2')
+      --calendar_data = calendar_data:gsub('(%d+%s+%d+)(%s\n)', markup.color(we, bg, '%1') .. '%2')
+      --calendar_data = calendar_data:gsub('(%d+)(%s\n)', markup.color(we, bg, '%1')..'%2')
+      --calendar_data = calendar_data:gsub('%s\n','\n')
+      --calendar_data = calendar_data:gsub("[\n%s]+$", "")
+      --calendar_data = calendar_data:gsub("\n+$", "")
+      calendar_data = calendar_data:gsub("(%d+%s+%d+%s%s\n)", markup.color( fg_unfocus, bg, "%1"))
+      calendar_data = calendar_data:gsub("(%d+%s%s%s%s%s\n)", markup.color( fg_unfocus, bg, "%1"))
+      calendar_data = calendar_data:gsub("\95\8", "")
       calendar_data = calendar_data:gsub("(%D)"..day.."(%D)", "%1<b><u>"..markup.color(bg, fg, day).."</u></b>%2")
       local result = "<tt><b><i>" .. title .. "</i></b><u>" .. "\n" .. description .. '</u>\n' .. calendar_data .. "</tt>"
       f:close()
