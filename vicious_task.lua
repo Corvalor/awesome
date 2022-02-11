@@ -7,11 +7,13 @@ local function parse( status_filter )
     local value = {}
     local f = io.popen( "task status:"..status_filter.." export" )
     local task_data = json.decode(f:read("*all"))
-    for i=1, #task_data do
-       local entry = {}
-       entry.id = task_data[i].id
-       entry.description = task_data[i].description
-       value[i] = entry
+    if task_data ~= nil then
+        for i=1, #task_data do
+        local entry = {}
+        entry.id = task_data[i].id
+        entry.description = task_data[i].description
+        value[i] = entry
+        end
     end
     return value
 end

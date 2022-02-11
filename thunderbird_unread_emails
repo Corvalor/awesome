@@ -1,0 +1,30 @@
+#!/bin/bash
+
+THUNDERBIRD_HOME=$HOME/.thunderbird
+
+WORK_ACCOUNT="localhost/INBOX.msf"
+
+cd $THUNDERBIRD_HOME
+COUNTA2=`find . -name '*.msf' -exec grep -REo 'A2=[0-9]' {} + | grep -Eo 'localhost.*INBOX.*=[0-9]+' | tail -1`
+COUNT94=`find . -name '*.msf' -exec grep -REo '94=[0-9]' {} + | grep -Eo 'localhost.*INBOX.*=[0-9]+' | tail -1`
+
+declare -A COUNT_BY_ACCOUNT
+
+# Counts are in chronological order, so it's safe to assume that the latest is the most recent update
+#for line in $COUNTSA2; do
+ACCOUNT=`echo $COUNTA2 | awk -F ':A2=' '{ print $1 }'`
+COUNT=`echo $COUNTA2 | awk -F ':A2=' '{ print $2 }'`
+
+COUNT_BY_ACCOUNT[$ACCOUNT]=$COUNT
+
+
+ACCOUNT=`echo $COUNT94 | awk -F ':94=' '{ print $1 }'`
+COUNT=`echo $COUNT94 | awk -F ':94=' '{ print $2 }'`
+
+if [ $COUNT > ${COUNT_BY_ACCOUNT[$ACCOUNT]} ]
+then
+    COUNT_BY_ACCOUNT[$ACCOUNT]=$COUNT
+fi
+#done
+
+echo "${COUNT_BY_ACCOUNT[$WORK_ACCOUNT]}"

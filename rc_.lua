@@ -111,7 +111,7 @@ modkey = "Mod4"
 if beautiful.wallpaper then
     for s in screen do
         local g = s.geometry
-        gears.wallpaper.tiled(beautiful.wallpaper[s.index], s.index, { x = -g.x, y = -g.y} )
+        gears.wallpaper.tiled(beautiful.wallpaper[s.index], s.index, { x = -g.x, y = -g.y - 350} )
     end
 end
 -- }}}
@@ -330,7 +330,7 @@ tyrannical.tags = {
         screen       = right,
         layout       = awful.layout.suit.max,
         class  = {
-            "Skype"
+	   "Skype"
         }
     },
     {
@@ -339,18 +339,15 @@ tyrannical.tags = {
 	force_screen = true,
         screen       = right,
         layout       = awful.layout.suit.max,
-        class  = {	   
-            "gitkraken"
-        }
-    }
+        class  = {
 }
+}}
+exit()
+  --local t = kbdcfg.layout[ layout ]
+  --kbdcfg.widget:set_text( " " .. t[3] .. " " )
+  --os.execute( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
+--end
 
--- Activate the given keyboard layout
-function keyboard_switch( layout )
-    local t = kbdcfg.layout[ layout ]
-    kbdcfg.widget:set_text( " " .. t[3] .. " " )
-    os.execute( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
-end
 
 -- Keyboard map indicator and changer
 kbdcfg = {}
