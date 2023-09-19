@@ -6,7 +6,7 @@
 	url = https://github.com/alexander-yakushev/menubar.git
 [submodule "lain"]
 	path = lain
-	url = https://github.com/CKnappe/lain.git
+	url = git://github.com/Corvalor/lain.git
 [submodule "vicious"]
 	path = vicious
 	url = http://git.sysphere.org/vicious
@@ -15,7 +15,7 @@
 	url = https://github.com/Elv13/tyrannical.git
 [submodule "autostart"]
 	path = autostart
-	url = https://github.com/CKnappe/awesome-autostart.git
+	url = git://github.com/Corvalor/awesome-autostart.git
 [submodule "radical"]
 	path = radical
 	url = https://github.com/Elv13/radical.git
