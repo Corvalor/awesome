@@ -53,6 +53,20 @@ local lain = require("lain")
 -- load autostart
 local autostart = require("autostart")
 
+
+function dump_obj(o)
+   if type(o) == 'table' then
+      local s ='{'
+      for k,v in pairs(o) do
+	 if type(k) ~= 'number' then k='"'..k..'"' end
+	 s = s .. '['..k..'] = ' .. dump_obj(v) .. ','
+      end
+      return s .. '}'
+   else
+      return tostring(o)
+   end
+end
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -89,7 +103,7 @@ beautiful.init(awful.util.getdir("config") .. "themes/default/theme.lua")
 --path = awful.util.getdir("config") .. "blind/arrow/themeZilla.lua"
 --path = awful.util.getdir("config") .. "blind/arrow/theme.lua"
 --path = awful.util.getdir("config") .. "blind/arrow/themeSciFi.lua"
-beautiful.init(path)
+--beautiful.init(path)
 local theme = beautiful.get()
 
 
@@ -141,7 +155,7 @@ tyrannical.tags = {
         name        = "Code",                 -- Call the tag "Term"
         init        = true,                   -- Load the tag on startup
         exclusive   = true,                   -- Refuse any other type of clients (by classes)
-	force_screen= true,
+        force_screen= true,
         screen      = left,                  -- Create this tag on screen 1 and screen 2
         layout      = awful.layout.suit.max, -- Use the tile layout
 	master_width_factor   = 0.21,
@@ -153,7 +167,7 @@ tyrannical.tags = {
         name        = "Ediff",                 -- Call the tag "Term"
         init        = false,                   -- Load the tag on startup
         exclusive   = true,                   -- Refuse any other type of clients (by classes)
-	force_screen= true,
+        force_screen= true,
         screen      = left,                  -- Create this tag on screen 1 and screen 2
         layout      = awful.layout.suit.max, -- Use the tile layout
         class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
@@ -161,10 +175,21 @@ tyrannical.tags = {
         }
     },
     {
+        name        = "Gedit",                 -- Call the tag "Term"
+        init        = false,                   -- Load the tag on startup
+        exclusive   = true,                   -- Refuse any other type of clients (by classes)
+        force_screen= true,
+        screen      = left,                  -- Create this tag on screen 1 and screen 2
+        layout      = awful.layout.suit.max, -- Use the tile layout
+        class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
+	   "Gedit",
+        }
+    },
+    {
         name         = "GameEditor",
         init         = false,
         fallback     = true,
-	force_screen = true,
+        force_screen = true,
         screen       = left,
         layout       = awful.layout.suit.max,
         class  = {
@@ -172,29 +197,38 @@ tyrannical.tags = {
         }
     },
     {
-        name        = "Web",
-        init        = true,
-        exclusive   = true,
-	force_screen= true,
-        screen      = middle,
-        layout      = awful.layout.suit.max,
-        class = { "qutebrowser", "firefox", "firefox-esr", "google-chrome", "Google-chrome" }
-    },
-    {
         name         = "QtCreator",
         init         = false,
         exclusive    = true,
-	force_screen = true,
+        force_screen = true,
         screen       = left,
 	max_clients  = 1,
         layout       = awful.layout.suit.max,
         class ={  "qtcreator:left" }
     },
     {
+        name         = "various",
+        init         = false,
+        exclusive    = true,
+        force_screen = true,
+        screen       = left,
+        layout       = awful.layout.suit.max,
+        class ={  "poedit" }
+    },
+    {
+        name        = "Web",
+        init        = true,
+        exclusive   = true,
+        force_screen= true,
+        screen      = middle,
+        layout      = awful.layout.suit.max,
+        class = { "qutebrowser", "firefox", "Firefox-esr", "google-chrome", "Google-chrome" }
+    },
+    {
         name         = "QtCreator",
         init         = true,
         exclusive    = true,
-	force_screen = true,
+        force_screen = true,
         screen       = middle,
 	max_clients  = 1,
         layout       = awful.layout.suit.max,
@@ -204,7 +238,7 @@ tyrannical.tags = {
         name        = "Term",
         init        = true,
         exclusive   = true,
-	force_screen = true,
+        force_screen = true,
         screen      = middle,
         layout      = awful.layout.suit.tile,
         class  = {
@@ -216,7 +250,7 @@ tyrannical.tags = {
         name        = "duolito",
         init        = false,
         exclusive   = true,
-	force_screen = true,
+        force_screen = true,
         screen      = middle,
         layout      = awful.layout.suit.fair,
         class  = {
@@ -227,7 +261,7 @@ tyrannical.tags = {
         name        = "headless",
         init        = false,
         exclusive   = true,
-	force_screen = true,
+        force_screen = true,
         screen      = middle,
         layout      = awful.layout.suit.fair,
         class  = {
@@ -238,7 +272,7 @@ tyrannical.tags = {
         name        = "Files",
         init        = true,
         exclusive   = true,
-	force_screen = true,
+        force_screen = true,
         screen      = middle,
         layout      = awful.layout.suit.tile,
         class  = {
@@ -249,7 +283,7 @@ tyrannical.tags = {
         name         = "eclipse",
         init         = false,
         fallback     = true,
-	force_screen = true,
+        force_screen = true,
         screen       = middle,
         layout       = awful.layout.suit.max,
         class  = {
@@ -260,7 +294,7 @@ tyrannical.tags = {
         name         = "GameEditor",
         init         = false,
         fallback     = true,
-	force_screen = true,
+        force_screen = true,
         screen       = middle,
         layout       = awful.layout.suit.max,
         class  = {
@@ -271,7 +305,7 @@ tyrannical.tags = {
         name         = "various",
         init         = true,
         fallback     = true,
-	force_screen = true,
+        force_screen = true,
         screen       = middle,
         layout       = awful.layout.suit.max,
         class  = {
@@ -282,7 +316,7 @@ tyrannical.tags = {
         name         = "okular",
         init         = false,
         exclusive    = true,
-	force_screen = true,
+        force_screen = true,
         screen       = middle,
         layout       = awful.layout.suit.max,
         class  = {
@@ -293,7 +327,7 @@ tyrannical.tags = {
         name         = "libreoffice",
         init         = false,
         exclusive    = true,
-	force_screen = true,
+        force_screen = true,
         screen       = middle,
         layout       = awful.layout.suit.max,
         class  = {
@@ -301,21 +335,32 @@ tyrannical.tags = {
         }
     } ,
     {
+        name         = "godot",
+        init         = false,
+        exclusive    = true,
+        force_screen = true,
+        screen       = middle,
+        layout       = awful.layout.suit.max,
+        class  = {
+	   "Godot"
+        }
+    } ,
+    {
         name         = "email",
         init         = true,
         exclusive    = true,
-	force_screen = true,
+        force_screen = true,
         screen       = right,
         layout       = awful.layout.suit.max,
         class  = {
-	   "thunderbird", "E-Mail"
+	   "thunderbird", "E-Mail", "thunderbird-default"
         }
     } ,
     {
         name         = "email-intern",
         init         = true,
         exclusive    = true,
-	force_screen = true,
+        force_screen = true,
         screen       = right,
         layout       = awful.layout.suit.max,
         class  = {
@@ -326,7 +371,7 @@ tyrannical.tags = {
         name         = "skype",
         init         = true,
         exclusive    = true,
-	force_screen = true,
+        force_screen = true,
         screen       = right,
         layout       = awful.layout.suit.max,
         class  = {
@@ -336,7 +381,7 @@ tyrannical.tags = {
     {
         name         = "git",
         init         = false,
-	force_screen = true,
+        force_screen = true,
         screen       = right,
         layout       = awful.layout.suit.max,
         class  = {	   
@@ -351,6 +396,10 @@ function keyboard_switch( layout )
     kbdcfg.widget:set_text( " " .. t[3] .. " " )
     os.execute( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
 end
+
+-- Activate compton
+os.execute("kill $(pgrep compton)")
+os.execute("compton -b -c --backend glx --vsync opengl-swc")
 
 -- Keyboard map indicator and changer
 kbdcfg = {}
@@ -375,7 +424,7 @@ require( "status_bar" )
 
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
-    awful.button({ }, 3, function () mymainmenu:toggle() end),
+    --awful.button({ }, 3, function () mymainmenu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
@@ -397,7 +446,7 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
+    --awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
@@ -433,7 +482,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
     -- Screenshot hotkeys.
-    awful.key({ }, "Print", scrot_full,
+    awful.key({ }, "Print", function()
+        os.execute("scrot_clip.sh")
+    end,
 	{description = "Take a screenshot of entire screen", group = "screenshot"}),
     awful.key({ modkey, }, "Print", scrot_selection,
 	{description = "Take a screenshot of selection", group = "screenshot"}),
@@ -545,7 +596,13 @@ awful.rules.rules = {
             keys = clientkeys,
             buttons = clientbuttons,
             floating = false
-        } 
+        } ,
+        callback = function(client)
+            if  client.role == "Dialog" or
+                client.role == "GtkFileChooserDialog" then
+                client.floating = true
+            end
+        end
     },
     { 
         rule = { class = "XCalc" },
@@ -559,6 +616,12 @@ awful.rules.rules = {
             floating = true
         }
     },
+    { 
+        rule = { class = "Poedit" },
+        properties = {
+            floating = true
+        }
+    },
     {
         rule = { name = "OPC" },
         callback = function(c)
@@ -568,14 +631,17 @@ awful.rules.rules = {
     { 
         rule = { class = "psmtec/GameEditor" },
         callback = function(c)
-            if string.match(c.name, "Ausführungslisten") then
-                c.overwrite_class = "gameeditor_scripts"
-            elseif  string.match(c.name, "Ausführungsliste Namen") then
+            if  string.match(c.name, "Ausführungsliste Namen") or
+                    string.match(c.name, "Text suche") then
                 c.overwrite_class = "gameeditor_scripts"
                 c.floating = true
+            elseif string.match(c.name, "Ausführungslisten") then
+                c.overwrite_class = "gameeditor_scripts"
             elseif  string.match(c.name, "Dialog") or
                     string.match(c.name, "Object Namen") or
-                    string.match(c.name, "Szene Namen") then
+                    string.match(c.name, "Objekt Namen") or
+                    string.match(c.name, "Szene Namen") or
+                    string.match(c.name, "Kopie") then
                 c.overwrite_class = "gameeditor_main"
                 c.floating = true
             elseif  string.match(c.name, "Projekt") or
@@ -615,19 +681,19 @@ awful.rules.rules = {
     {
         rule = { class = "Firefox-esr" },
         callback = function(client)
-	    local nameChanged = function(c)
-	        local nameParts = {}
-	        local test = ""
-		if c.name ~= nil then
-		    local name = string.match( c.name, "(.+) %- Mozilla Firefox" )
-		    if name ~= nil then
-			c.name = name
-		    end
-		end
-	    end
-	    client:connect_signal( "property::name", nameChanged)
-	    nameChanged(client)
-	end
+            local nameChanged = function(c)
+                local nameParts = {}
+                local test = ""
+                if c.name ~= nil then
+                    local name = string.match( c.name, "(.+) %- Mozilla Firefox" )
+                    if name ~= nil then
+                        c.name = name
+                    end
+                end
+            end
+            client:connect_signal( "property::name", nameChanged)
+            nameChanged(client)
+        end
     },
 }
 -- }}}
@@ -665,22 +731,40 @@ client.connect_signal("unfocus",
 			 c.border_color = beautiful.border_normal
 end)
 
-function check_mail()
-  cmd = awful.util.getdir("config") .. "/thunderbird_unread_emails"
-  awful.spawn.easy_async( cmd,
-			  function( stdout, stderr, reason, exit_code)
-			     num = tonumber(stdout)
-			     if num ~= 0 then
-				naughty.notify {
-				   text = "New emails received (" .. num .. ")",
-				   width = 250,
-				   height = 100
-				}
-			     end
-  end)
-end
+naughty.config.defaults.margin = beautiful.xresources.apply_dpi(50)
+naughty.config.notify_callback = 
+  function(args)
+    if args.timeout ~= 0 and args.title ~= "Tasks" then
+        naughty.notify( {
+            title = args.title,
+            text = args.text,
+            position = args.position,
+            ontop = args.ontop,
+            icon = args.icon,
+            --run = args.run,
+            timeout = 0
+        } )
+    else
+        return args
+    end
+  end
 
-helpers.newtimer("mail", 2, check_mail)
+--function check_mail()
+  --cmd = awful.util.getdir("config") .. "/thunderbird_unread_emails"
+  --awful.spawn.easy_async( cmd,
+			  --function( stdout, stderr, reason, exit_code)
+			     --num = tonumber(stdout)
+			     --if num ~= 0 then
+				--naughty.notify {
+				   --text = "New emails received (" .. num .. ")",
+				   --width = 250,
+				   --height = 100
+				--}
+			     --end
+  --end)
+--end
+
+--helpers.newtimer("mail", 2, check_mail)
 
 
 -- }}}

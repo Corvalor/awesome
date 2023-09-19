@@ -5,7 +5,7 @@ timers = { 5,10 }
 screenshot = os.getenv("HOME") .. "/Pictures/scrot/$(date +%F_%T).png"
 
 function scrot_full()
-    scrot("scrot " .. screenshot .. " -e 'xclip -selection c -t image/png < $f', scrot_callback", scrot_callback, "Take a screenshot of entire screen")
+    scrot("scrot_clip.sh", scrot_callback, "Take a screenshot of entire screen")
 end
 
 function scrot_selection()

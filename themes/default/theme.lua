@@ -45,6 +45,7 @@ theme.textbox_widget_margin_top     = 1
 theme.notify_fg                     = theme.fg_normal
 theme.notify_bg                     = theme.bg_normal
 theme.notify_border                 = theme.border_focus
+theme.notification_margin           = 10
 theme.awful_widget_height           = 14
 theme.awful_widget_margin_top       = 2
 theme.mouse_finder_color            = "#CC9393"

@@ -30,7 +30,7 @@ local function new(args)
     local result = wibox()
     result.sections = {}
     result.x = 20
-    result.y = 20
+    result.y = 2040
     result.width = 10
     result.height = 100
     result.margin_width = 5
@@ -83,6 +83,7 @@ local function new(args)
 	   x_offset = x_offset + cur_screen.geometry.x
 	end
 	self.x = parent.x + x_offset
+	self.y = cur_screen.geometry.y + parent.y + 20
     end
     function result.add_header( text, right_widget )
 	local first = self.current_part == nil

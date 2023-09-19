@@ -4,6 +4,7 @@ local lain = require("lain")
 local markup = lain.util.markup
 local beautiful = require("beautiful")
 local help = require("help")
+local dump = require("dump")
 
  --trigger client mode on Ctrl + w
  globalkeys = awful.util.table.join(globalkeys,
@@ -41,6 +42,10 @@ function simulateKey( key )
     root.fake_input('key_release', key)
     root.fake_input('key_press', key)
     root.fake_input('key_release', key)
+end
+
+function string.starts(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
 end
 
 current_task_id = nil;
@@ -182,8 +187,28 @@ end
       end )
       AddModularKeybinding( "v", "Show tasklist",
 			    function()
-			       lain.widget.contrib.task.show();
+					--mytask:emit_signal("toggle");
+			       lain.widget.contrib.task.toggle();
       end )
+      AddModularKeybinding( "i", "xwininfo",
+		function()
+			awful.spawn.easy_async( "xprop",
+				function( stdout, stderr, reason, exit_code)
+					ignore = false
+					lines = {}
+					for s in stdout:gmatch("[^\r\n]+") do
+						if string.starts(s, "_NET_WM_ICON") then
+							ignore = true
+						elseif string.starts(s, "_") or string.starts(s,"W") then
+							ignore = false
+						end
+						if ignore == false then
+							table.insert(lines, s)
+						end
+					end
+					dump.run(table.concat(lines, "\n"))
+				end)
+		end)
       AddModularKeybinding( "s", "Complete a task",
 			    function()
 	 lain.widget.contrib.task.show();
@@ -231,6 +256,13 @@ end
 		  return;
 	       end
 	    end
+	 end
+      end )
+      AddModularKeybinding( "[", "Move client to other screen",
+			    function()
+	 local c = client.focus
+	 if c then
+		c:move_to_screen()
 	 end
       end )
       AddModularKeybinding( ";", "Open dmenu (execute applications)",

@@ -7,6 +7,7 @@ local ct           = require( "radical.widgets.constrainedtext" )
 local info_menu    = require( "info_menu" )
 local vicious      = require( "vicious" )
 local vicious_task = require( "vicious_task" )
+local inspect = require('inspect')
 
 local taskModule = {}
 
@@ -51,7 +52,7 @@ local function new( args )
     end
 
     vicious.register( taskwidget, vicious_task,
-		      parseViciousTaskStats, 54 )
+		      parseViciousTaskStats, 9 )
 
     local radial = wibox.widget {
 	{
@@ -67,6 +68,7 @@ local function new( args )
 	widget        = wibox.container.radialprogressbar,
 	forced_width  = 44
     }
+	local mybutton = util.table.join(button({ }, 1, taskInfoMenu.toggle ))
 
     local right_layout = wibox.layout {
 	{
@@ -74,12 +76,17 @@ local function new( args )
 	    widget  = wibox.widget.imagebox,
 	},
 	radial,
-	buttons = util.table.join(button({ }, 1, taskInfoMenu.toggle )),
+	buttons = mybutton,
 	layout  = wibox.layout.fixed.horizontal
     }
 
+	local function toggle(p,a)
+		taskInfoMenu.toggle(p,taskInfoMenu);
+	end
+
     right_layout:connect_signal( "mouse::enter", taskInfoMenu.previewOn )
     right_layout:connect_signal( "mouse::leave", taskInfoMenu.previewOff )
+    right_layout:connect_signal( "toggle", toggle )
 
   return right_layout
 end

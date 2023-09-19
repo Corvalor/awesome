@@ -33,7 +33,7 @@ local layouts =
 
 -- Textclock
 --os.setlocale(os.getenv("LANG")) -- to localize the clock
-local mytextclock = awful.widget.textclock()
+local mytextclock = wibox.widget.textclock()
 
 local clock       = dateInfo(nil)
 local mem       = memInfo(nil)
@@ -41,13 +41,14 @@ local cpu       = cpuInfo(nil)
 local ram       = ramInfo(nil)
 local task       = taskInfo(nil)
 
+lain.widget.contrib.task.attach( mytextclock );
 -- Calendar
 local cal = lain.widget.calendar({
     attach_to = { mytextclock },
     cal = "gcal -s1",
     followtag = true,
     notification_preset = {
-	icon_size = 120,
+        icon_size = 120,
         font = theme.font,
         fg   = theme.fg_normal,
         bg   = theme.bg_alternate_outer,
@@ -55,13 +56,13 @@ local cal = lain.widget.calendar({
     }
 })
 
-lain.widget.contrib.task.attach( mytextclock );
 
 -- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
+mytask = task
 mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 1, awful.tag.viewonly),
                     awful.button({ modkey }, 1, awful.client.movetotag),
@@ -227,8 +228,8 @@ function taglist_update(w, buttons, label, data, objects)
 	else
 	    ib = wibox.widget.imagebox()
 	    tb = wibox.widget.textbox()
-	    bgb = wibox.widget.background()
-	    bgb2 = wibox.widget.background()
+	    bgb = wibox.container.background()
+	    bgb2 = wibox.container.background()
 	    m = wibox.layout.margin(tb, 4, 4)
 	    l = wibox.layout.fixed.horizontal()
 
@@ -425,7 +426,7 @@ for s = 1, screen.count() do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons, nil, tasklist_update )
 
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s, height = 22 })
+    mywibox[s] = awful.wibar({ position = "top", screen = s, height = 22 })
     mywibox[s].bg = beautiful.bg_normal_gradient
 
     -- Widgets that are aligned to the left
@@ -441,7 +442,7 @@ for s = 1, screen.count() do
         if right_layout_toggle then
             right_layout:add(arrl_ld)
             for i, n in pairs(arg) do
-                right_layout:add(wibox.widget.background(n, beautiful.bg_alternate))
+                right_layout:add(wibox.container.background(n, beautiful.bg_alternate))
             end
         else
             right_layout:add(arrl_dl)
